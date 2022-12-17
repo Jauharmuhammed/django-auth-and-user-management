@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+<title>Dashboard</title>
+{% endblock %}
+
+{% block head %}
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.0/normalize.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lykmapipo/themify-icons@0.1.2/css/themify-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pixeden-stroke-7-icon@1.2.3/pe-icon-7-stroke/dist/pe-icon-7-stroke.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.0/css/flag-icon.min.css">
+    <link rel="stylesheet" href="{% static 'assets/css/cs-skin-elastic.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/html5shiv/3.7.3/html5shiv.min.js"></script> -->
+    <link href="https://cdn.jsdelivr.net/npm/chartist@0.11.0/dist/chartist.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/jqvmap@1.5.1/dist/jqvmap.min.css" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/weathericons@2.1.0/css/weather-icons.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@3.9.0/dist/fullcalendar.min.css" rel="stylesheet" />
+    <link href="{% static 'dashboard/dashboard.css' %}" rel="stylesheet">
+
+    <!-- Data table -->
+    <link rel="stylesheet" type="text/css" href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/css/jquery.dataTables_themeroller.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css">
+    
+    {% if form.errors %}
+        <script>
+            $(document).on('ready', function(){
+                $('#add_user').modal('show');
+            });
+        </script>
+    {% endif %}
+
+
+{% endblock %}
+
+{% block content %}
+
+<div class="content">
+    <!-- Animated -->
+    <div class="animated fadeIn">
+        <div class="clearfix"></div>
+        <!-- Orders -->
+        <div class="orders">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card">
+                        <div class="card-body d-flex justify-content-between">
+                            <h4 class="box-title">Users</h4>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_user" data-whatever="" >Add a user</button>
+
+                            <div class="modal fade" id="add_user" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="h3 my-2 fw-normal text-center text-success" id="exampleModalLabel"><b>Add a User</b></h1>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="" method="POST">
+                                            {% csrf_token %}
+                                    
+                                            <div class="form-floating">
+                                                {{ form.username }}
+                                                <span class="text-danger">{{ form.errors.username }}</span>
+                                            </div>
+                                            <div class="form-floating">
+                                                {{ form.email }}
+                                                <span class="text-danger">{{ form.errors.email }}</span>
+                                            </div>
+                                            <div class="form-floating">
+                                                {{ form.password1 }}
+                                                <span class="text-danger">{{ form.errors.password1 }}</span>
+                                            </div>
+                                            <div class="form-floating">
+                                                {{ form.password2 }}
+                                                <span class="text-danger ">{{ form.errors.password2 }}</span>
+                                            </div>
+                                        
+                                    </div>
+                                    <div class="modal-footer d-flex justify-content-center">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button class=" btn btn-success" type="submit" >Add User</button>
+                                    </div>
+                                    </div>
+                                </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body--">
+                            <div class="table-stats order-table ov-h">
+                                <table class="table" id="user_table">
+                                    <thead>
+                                        <tr>
+                                            <th>Username</th>
+                                            <th>Email Address</th>
+                                            <th>First Name</th>
+                                            <th>Last Name</th>
+                                            <th>Staff Status</th>
+                                            <th class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if users %}
+                                        {% for i in users %}
+                                        <tr>
+                                            <td>  <span class="username">{{ i.username }}</span> </td>
+                                            <td> <span class="email">{{ i.email }}</span> </td>
+                                            <td><span class="name">{{ i.first_name }}</span></td>
+                                            <td><span class="name">{{ i.last_name }}</span></td>
+                                            <td class="text-center">
+                                                {% if i.is_superuser %}
+                                                <span class="text-success">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                                                      </svg>
+                                                </span>
+                                                {% else %}
+                                                <span class="bi bi-x-circle-fill text-danger">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
+                                                      </svg>
+                                                </span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'edit' pk=i.id %}"><button type="button" class="btn btn-primary" >Edit</button></a>
+
+
+                                                <!-- Button trigger modal -->
+                                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#user-delete-confirmation-{{i.id}}">
+                                                    Delete
+                                                </button>
+                                                
+                                                <!-- Modal -->
+                                                {% if i.is_superuser %}
+                                                    <div class="modal fade" id="user-delete-confirmation-{{i.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                            <h4 class="modal-title text-left text-danger" id="exampleModalLongTitle"><b>Sorry</b></h4>
+                                                            </div>
+                                                            <div class="modal-body text-left">
+                                                                Sorry! You cannot delete an Admin
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                        </div>
+                                                        </div>
+                                                    </div>
+                                                {% else %}
+                                                    <div class="modal fade" id="user-delete-confirmation-{{i.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                            <h4 class="modal-title text-left text-danger" id="exampleModalLongTitle"><b>Are you sure?</b></h4>
+                                                            </div>
+                                                            <div class="modal-body text-left">
+                                                                Are you sure you want to delete user <b>{{ i.username }}</b>?
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                            <a href="{% url 'delete' pk=i.id %}"><button type="button" class="btn btn-danger">Confirm</button></a>
+                                                            </div>
+                                                        </div>
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
+
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div> <!-- /.table-stats -->
+                        </div>
+                    </div> <!-- /.card -->
+                </div>  <!-- /.col-lg-8 -->
+
+                
+            </div>
+        </div>
+        <!-- /.orders -->
+    </div>
+    <!-- .animated -->
+</div>
+
+
+{% endblock %}
+
+{% block script %}
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.4/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-match-height@0.7.2/dist/jquery.matchHeight.min.js"></script>
+    <script src="{% static 'assets/js/main.js' %}"></script>
+
+    <!--  Chart js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.7.3/dist/Chart.bundle.min.js"></script>
+
+    <!--Chartist Chart-->
+    <script src="https://cdn.jsdelivr.net/npm/chartist@0.11.0/dist/chartist.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartist-plugin-legend@0.6.2/chartist-plugin-legend.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery.flot@0.8.3/jquery.flot.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flot-pie@1.0.0/src/jquery.flot.pie.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flot-spline@0.0.1/js/jquery.flot.spline.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/simpleweather@3.1.0/jquery.simpleWeather.min.js"></script>
+    <script src="{% static 'assets/js/init/weather-init.js' %}"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@3.9.0/dist/fullcalendar.min.js"></script>
+    <script src="{% static 'assets/js/init/fullcalendar-init.js' %}"></script>
+
+    <!--Local Stuff-->
+    <script src="{% static 'dashboard/script.js'%} "></script>
+
+    <!-- Data table -->
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready( function () {
+            $('#user_table').DataTable();
+        } );
+    </script>
+
+    
+
+{% endblock %}
+

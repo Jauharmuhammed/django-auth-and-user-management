@@ -1,0 +1,43 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block head %}
+
+    <title>login</title>
+    <link href="{% static 'login/styles.css' %}" rel="stylesheet">
+
+{% endblock %}
+
+
+{% block body %}
+
+<main class="form-signin">
+    <form action="" method="POST">
+        {% csrf_token %}
+        <h1 class="h3 mb-3 fw-normal text-center">Login</h1>
+
+        <div class="form-floating">
+            <input type="text" class="form-control" name='username' id="floatingInput" placeholder="Username">
+            <label for="floatingInput">Username</label>
+        </div>
+        <div class="form-floating">
+            <input type="password" class="form-control" name='password' id="floatingPassword"
+                placeholder="Password">
+            <label for="floatingPassword">Password</label>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <p {% if message.tags %} 
+                    class="text-{{ message.tags }} text-center"
+                {% endif %} id="message">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+
+        <button class="w-100 btn btn-lg btn-primary" type="submit">Login</button>
+        <p class="text-center pt-3">Don't have an account <a href="{% url 'register' %}">Register</a></p>
+    </form>
+</main>
+
+
+{% endblock %}
